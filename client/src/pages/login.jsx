@@ -15,19 +15,12 @@ export default function Login() {
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); // Hapus error saat input berubah
+    setErrors({ ...errors, [e.target.name]: "" }); 
   }
 
   async function handleLogin(e) {
     e.preventDefault();
-    let newErrors = {};
-
-    if (!form.email) newErrors.email = "Email wajib diisi";
-    if (!form.password) newErrors.password = "Password wajib diisi";
-
-    if (Object.keys(newErrors).length > 0) {
-      return setErrors(newErrors);
-    }
+   
 
     try {
       setLoading(true);
@@ -38,7 +31,6 @@ export default function Login() {
       });
 
       localStorage.setItem("token", data.data.token);
-      console.log(data,"SSSSSSSS");
       
       navigate("/profile");
     } catch (error) {
