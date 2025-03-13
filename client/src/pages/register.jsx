@@ -15,7 +15,7 @@ export default function Register() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const [successMessage, setSuccessMessage] = useState("");
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
@@ -30,7 +30,11 @@ export default function Register() {
         url: "/registration",
         data: form,
       });
-      navigate("/login");
+
+      if (data.status === 0) {
+        setSuccessMessage(data.message); // ✅ Tampilkan pesan sukses
+        setTimeout(() => navigate("/login"), 2000); // ✅ Pindah ke login setelah 2 detik
+      }
     } catch (error) {
       setErrors({ form: error.response?.data?.message || "Registrasi gagal." });
     } finally {
@@ -45,8 +49,12 @@ export default function Register() {
         <div className="p-8 w-1/2">
           <img src={logoRegis} alt="Logo" className="h-8 mb-4" />
           <h2 className="text-xl font-bold text-gray-800">SIMS PPOB</h2>
-          <p className="text-sm text-gray-500 mb-4">Lengkapi data untuk membuat akun</p>
-
+          <p className="text-sm text-gray-500 mb-4">
+            Lengkapi data untuk membuat akun
+          </p>
+          {successMessage && (
+            <p className="text-green-600 text-sm mb-3">{successMessage}</p> // ✅ Tampilkan pesan sukses di UI
+          )}
           <form onSubmit={handleSubmit} className="space-y-3">
             <input
               type="email"
@@ -65,7 +73,7 @@ export default function Register() {
               onChange={handleChange}
               className="input input-bordered w-full h-12"
             />
-            
+
             <input
               type="text"
               name="last_name"
@@ -93,7 +101,9 @@ export default function Register() {
               className="input input-bordered w-full h-12"
             />
 
-            {errors.form && <p className="text-red-500 text-sm">{errors.form}</p>}
+            {errors.form && (
+              <p className="text-red-500 text-sm">{errors.form}</p>
+            )}
 
             <button
               type="submit"
@@ -105,11 +115,14 @@ export default function Register() {
           </form>
 
           <p className="text-sm text-center mt-4">
-            Sudah punya akun? 
+            Sudah punya akun?
             <span
               className="text-red-600 cursor-pointer font-semibold hover:underline"
               onClick={() => navigate("/login")}
-            > di sini</span>
+            >
+              {" "}
+              di sini
+            </span>
           </p>
         </div>
 

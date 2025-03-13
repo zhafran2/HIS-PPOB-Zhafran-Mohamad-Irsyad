@@ -12,15 +12,14 @@ export default function Login() {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-
+  const [successMessage, setSuccessMessage] = useState("");
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" }); 
+    setErrors({ ...errors, [e.target.name]: "" });
   }
 
   async function handleLogin(e) {
     e.preventDefault();
-   
 
     try {
       setLoading(true);
@@ -30,9 +29,13 @@ export default function Login() {
         data: form,
       });
 
-      localStorage.setItem("token", data.data.token);
-      
-      navigate("/profile");
+      if (data.status === 0) {
+        setSuccessMessage(data.message); // ✅ Simpan pesan sukses
+
+        localStorage.setItem("token", data.data.token);
+
+        setTimeout(() => navigate("/"), 2000); // ✅ Arahkan ke profile setelah 2 detik
+      }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Login gagal.";
       if (errorMessage.includes("email")) {
@@ -59,7 +62,11 @@ export default function Login() {
               Masukkan email dan password untuk masuk
             </p>
           </div>
-
+          {successMessage && (
+            <p className="text-green-600 text-sm text-center mt-4">
+              {successMessage}
+            </p>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <input

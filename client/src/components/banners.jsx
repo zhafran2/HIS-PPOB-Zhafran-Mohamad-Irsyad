@@ -1,17 +1,34 @@
-import banner1 from "../assets/Banner 1.png";
-import banner2 from "../assets/Banner 2.png";
-import banner3 from "../assets/Banner 3.png";
-import banner4 from "../assets/Banner 4.png";
-import banner5 from "../assets/Banner 5.png";
+import { useEffect, useState } from "react";
 
-export default function Banners() {
+import axios from "../helpers/axiosInstance";
+export default function Banners({ errors, setErrors }) {
+  const [banners, setBannners] = useState([]);
+
+  async function fetchBanners() {
+    try {
+      const { data } = await axios({
+        method: "GET",
+        url: "/banner",
+        headers: {
+          Authorization: `bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setBannners(data.data);
+    } catch (error) {
+      setErrors(error.response.data.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchBanners();
+  }, []);
   return (
     <>
       <div className="mt-6 grid grid-cols-5 gap-2">
-        {[banner1, banner2, banner3, banner4, banner5].map((banner, index) => (
+        {banners.map((banner, index) => (
           <img
             key={index}
-            src={banner}
+            src={banner.banner_image}
             alt="Promo Banner"
             className="rounded-lg shadow"
           />
