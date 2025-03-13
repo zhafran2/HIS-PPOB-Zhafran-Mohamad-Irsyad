@@ -11,5 +11,5 @@ export default function NoAuth() {
     );
   }
 
-  return <Navigate to={"/profile"} />;
+  return <Navigate to={"/"} />;
 }

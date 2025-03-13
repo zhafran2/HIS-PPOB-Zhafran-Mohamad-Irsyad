@@ -19,7 +19,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/login" element={<Login />} />
         </Route>
         <Route element={<Auth/>}>
-          <Route path="/profile" element={<GetProfile />} />
+          <Route path="/" element={<GetProfile />} />
           <Route path="/profile/update" element={<UpdateProfile />} />
         </Route>
       </Routes>

@@ -2,9 +2,7 @@ import { Navigate, Outlet } from "react-router";
 import Navbar from "./navbar";
 
 export default function Auth() {
-  const auth = localStorage.token
-  console.log(localStorage,"SSSSSS");
-  
+  const auth = localStorage.token;
 
   if (auth) {
     return (
