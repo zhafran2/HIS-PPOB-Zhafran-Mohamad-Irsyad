@@ -16,7 +16,7 @@ export default function UserProfile() {
         method: "GET",
         url: "/profile",
         headers: {
-          Authorization: `bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       localStorage.setItem("first_name", data.data.first_name);
