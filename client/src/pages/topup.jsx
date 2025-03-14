@@ -8,24 +8,31 @@ export default function TopUp() {
   const [processing, setIsProcessing] = useState(false);
   const [top_up_amount, setTop_Up_Amount] = useState(0);
   const [errors, setErrors] = useState("");
+  const [successMessage, setSuccessMessage] = useState(""); // State untuk pesan sukses
   const navigate = useNavigate();
 
   const predefinedAmounts = [10000, 20000, 50000, 100000, 250000, 500000];
 
   async function handleTopUp(e) {
     e.preventDefault();
+    setErrors("");
+    setSuccessMessage(""); // Reset pesan sebelum request
+
     try {
       setIsProcessing(true);
       const { data } = await axios({
         method: "POST",
         url: "/topup",
-        data: { top_up_amount },
+        data: {
+          top_up_amount,
+        },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+
       if (data.status === 0) {
-        navigate("/");
+        setSuccessMessage(data.message); // Set pesan sukses dari response
       }
     } catch (error) {
       setErrors(error.response?.data?.message || "Terjadi kesalahan");
@@ -35,13 +42,13 @@ export default function TopUp() {
   }
 
   return (
-    <div className="container mx-auto max-w-5xl p-6">
+    <div className="ml-8 mr-8 mt-8">
       {/* Header: User Profile & Saldo */}
       <div className="flex items-start justify-between">
-        <div className="w-2/5">
+        <div className="w-2/5 ">
           <UserProfile />
         </div>
-        <div className="w-3/5">
+        <div className="w-3/5 ">
           <Saldo />
         </div>
       </div>
@@ -50,7 +57,7 @@ export default function TopUp() {
       <div className="mt-6 grid grid-cols-3 gap-6">
         {/* Input & Button */}
         <div className="col-span-2">
-          <h2 className="text-xl font-bold">Silahkan masukkan</h2>
+          <p className="text-xl">Silahkan masukkan</p>
           <h3 className="text-2xl font-bold mb-4">Nominal Top Up</h3>
 
           {/* Input Nominal */}
@@ -77,17 +84,22 @@ export default function TopUp() {
             {processing ? "Memproses..." : "Top Up"}
           </button>
 
+          {/* Pesan Sukses */}
+          {successMessage && (
+            <p className="text-green-500 text-sm mt-2">{successMessage}</p>
+          )}
+
           {/* Pesan Error */}
           {errors && <p className="text-red-500 text-sm mt-2">{errors}</p>}
         </div>
 
         {/* Opsi Nominal */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 h-3 mt-19">
           {predefinedAmounts.map((amount) => (
             <button
               key={amount}
               onClick={() => setTop_Up_Amount(amount)}
-              className="p-3 border rounded-md hover:bg-gray-200 text-center"
+              className="p-3 border border-gray-400 rounded-md hover:bg-gray-200 text-center"
             >
               Rp{amount.toLocaleString("id-ID")}
             </button>
