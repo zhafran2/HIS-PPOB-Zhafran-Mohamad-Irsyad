@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import axios from "../helpers/axiosInstance";
+
 
 import Services from "../components/services";
 import Banners from "../components/banners";
-import Saldo from "../components/saldo";
+
 import UserProfile from "../components/UserProfile";
+import Saldo from "../components/Saldo";
 
 export default function HomePage() {
   return (
