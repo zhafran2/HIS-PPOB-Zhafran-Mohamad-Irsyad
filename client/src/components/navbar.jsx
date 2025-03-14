@@ -23,7 +23,7 @@ export default function Navbar() {
         </NavLink>
 
         <NavLink
-          to="/transaction"
+          to="/transaction/history"
           className={({ isActive }) =>
             isActive ? "text-red-600" : "text-gray-600 hover:text-gray-900"
           }

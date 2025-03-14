@@ -11,6 +11,7 @@ import NoAuth from "./components/noAuth.jsx";
 import Auth from "./components/auth.jsx";
 import TopUp from "./pages/topup.jsx";
 import Transaction from "./pages/transaction.jsx";
+import TransactionHistory from "./pages/transactionHistory.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")).render(
 
           <Route path="/profile/update" element={<UpdateProfile />} />
           <Route path="/transaction" element={<Transaction />} />
+          <Route path="/transaction/history" element={<TransactionHistory/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

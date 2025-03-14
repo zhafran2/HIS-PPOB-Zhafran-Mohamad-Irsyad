@@ -1,7 +1,9 @@
+import { Link } from "react-router";
 import axios from "../helpers/axiosInstance";
 import { useEffect, useState } from "react";
 export default function Services({ errors, setErrors }) {
   const [services, setServices] = useState([]);
+
   async function fetchServices() {
     try {
       const { data } = await axios({
@@ -21,6 +23,7 @@ export default function Services({ errors, setErrors }) {
   }, []);
   return (
     <>
+      <Link to={'/transaction'}>
       <div className="grid grid-cols-12 gap-4 mt-6 text-center">
         {services.map((service, index) => (
           <div
@@ -35,7 +38,7 @@ export default function Services({ errors, setErrors }) {
             <p className="text-sm mt-2 font-medium">{service.service_name}</p>
           </div>
         ))}
-      </div>
+      </div></Link>
     </>
   );
 }
