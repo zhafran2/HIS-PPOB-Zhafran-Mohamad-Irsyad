@@ -5,21 +5,30 @@ import UserProfile from "../components/UserProfile";
 
 export default function TransactionHistory() {
   const [history, setHistory] = useState([]);
+  const [offset, setOffset] = useState(0);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const limit = 3; // Sesuai dengan data backend
 
-  async function fetchTransactions() {
+  async function fetchTransactions(newOffset = 0, append = false) {
     try {
+      setLoading(true);
       const { data } = await axios({
         method: "GET",
-        url: "/transaction/history",
+        url: `/transaction/history?offset=${newOffset}&limit=${limit}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      setHistory(data.data.records || []);
+      setHistory((prev) =>
+        append ? [...prev, ...data.data.records] : data.data.records
+      );
+      setOffset(newOffset);
     } catch (error) {
       setError(error.response?.data?.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -27,7 +36,10 @@ export default function TransactionHistory() {
     fetchTransactions();
   }, []);
 
-  // Format the date and time
+  const loadMore = () => {
+    fetchTransactions(offset + limit, true);
+  };
+
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return (
@@ -37,7 +49,6 @@ export default function TransactionHistory() {
     );
   };
 
-  // Format currency
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -100,7 +111,7 @@ export default function TransactionHistory() {
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
                           transaction.transaction_type === "TOPUP"
                             ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
+                            : "bg-blue-100 text-red-800"
                         }`}
                       >
                         {transaction.transaction_type}
@@ -128,6 +139,16 @@ export default function TransactionHistory() {
               : "No transaction history found"}
           </div>
         )}
+
+        <div className="text-center mt-4">
+          <button
+            onClick={loadMore}
+            disabled={loading}
+            className="text-red-500 hover:underline"
+          >
+            {loading ? "Loading..." : "Show more"}
+          </button>
+        </div>
       </div>
     </>
   );

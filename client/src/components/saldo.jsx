@@ -6,8 +6,9 @@ export default function Saldo() {
   const [balance, setBalance] = useState(null);
   const [errors, setErrors] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showBalance, setShowBalance] = useState(false); // ✅ State untuk toggle saldo
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ Perbaikan 1: Gunakan useLocation()
+  const location = useLocation();
 
   async function balanceUser() {
     setLoading(true);
@@ -25,7 +26,7 @@ export default function Saldo() {
         localStorage.setItem("saldo", data.data.balance);
       }
     } catch (error) {
-      setErrors(error.response?.data?.message || "Terjadi kesalahan."); // ✅ Perbaikan 2: Cegah error jika response kosong
+      setErrors(error.response?.data?.message || "Terjadi kesalahan.");
     } finally {
       setLoading(false);
     }
@@ -42,15 +43,15 @@ export default function Saldo() {
       <div className="bg-red-500 text-white px-6 py-4 rounded-lg text-start relative mt-4 md:mt-0 h-60">
         <p className="text-lg font-semibold">Saldo Anda</p>
         <p className="text-3xl font-bold">
-          {location.pathname === "/" 
-            ? "Rp ••••••••" // ✅ Tampilkan saldo di halaman top-up
-            : `Rp ${balance?.toLocaleString()}`} {/* ✅ Sembunyikan saldo di halaman lain */}
+          {showBalance || location.pathname !== "/" 
+            ? `Rp ${balance?.toLocaleString()}` 
+            : "Rp ••••••••"}
         </p>
         <button
           className="absolute bottom-4 left-6 text-sm underline hover:border-l-base-100"
-          onClick={() => navigate("/topup")}
+          onClick={() => setShowBalance(!showBalance)} // ✅ Toggle saldo saat tombol diklik
         >
-          Lihat Saldo
+          {showBalance ? "Sembunyikan Saldo" : "Lihat Saldo"} {/* ✅ Ubah teks tombol sesuai status */}
         </button>
       </div>
     </>
