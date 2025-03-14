@@ -9,7 +9,6 @@ export default function Transaction() {
   const [error, setError] = useState("");
   const [services, setServices] = useState([]);
   const [userBalance, setUserBalance] = useState(0);
-
   const [transaction_type, set_Transaction_Type] = useState("");
   const [service_code, set_Service_Code] = useState("");
   const [service_name, set_Service_name] = useState("");
@@ -17,9 +16,11 @@ export default function Transaction() {
   const [selectedService, setSelectedService] = useState(null);
   const [customAmount, setCustomAmount] = useState("");
   const navigate = useNavigate();
-
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [processing, setProcessing] = useState(false);
-
+  // Add state for confirmation dialog
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showFailedModal, setShowFailedModal] = useState(false);
   async function fetchServices() {
     try {
       const { data } = await axios({
@@ -87,15 +88,18 @@ export default function Transaction() {
     }
   };
 
-  async function handleTransaction(e) {
-    e.preventDefault();
+  // Show confirmation dialog when Pay button is clicked
+  const handlePayButtonClick = () => {
+    setShowConfirmation(true);
+  };
 
-    // Check if user has enough balance
-    if (parseFloat(total_amount) > userBalance) {
-      setError("Saldo tidak mencukupi untuk melakukan transaksi ini");
-      return;
-    }
+  // Handle cancel button in confirmation dialog
+  const handleCancelConfirmation = () => {
+    setShowConfirmation(false);
+  };
 
+  // Proceed with transaction after confirmation
+  async function handleConfirmedTransaction() {
     try {
       setProcessing(true);
       const { data } = await axios({
@@ -113,15 +117,27 @@ export default function Transaction() {
       });
       if (data.status === 0) {
         setMessage(data.message);
-        navigate("/transaction/history");
+        setShowConfirmation(false);
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          navigate("/transaction/history");
+        }, 3000);
       }
     } catch (error) {
       setError(error.response?.data?.message || "Transaction failed");
+      setShowConfirmation(false); // Hide confirmation dialog on error
     } finally {
       setProcessing(false);
     }
   }
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate("/transaction/history");
+  };
 
+  const handleCloseFailedModal = () => {
+    setShowFailedModal(false);
+  };
   return (
     <>
       <div className="ml-8 mr-8 mt-8">
@@ -170,8 +186,7 @@ export default function Transaction() {
                       key={service.service_code}
                       value={service.service_code}
                     >
-                      <img src={service.service_icon} alt="" />
-                      {service.service_name} 
+                      {service.service_name}
                     </option>
                   ))}
                 </select>
@@ -189,7 +204,7 @@ export default function Transaction() {
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-gray-500 sm:text-sm">Rp</span>
+                      <span className="text-gray-500 sm:text-sm">💵</span>
                     </div>
                     <input
                       type="text"
@@ -246,7 +261,7 @@ export default function Transaction() {
                 )}
 
                 <button
-                  onClick={handleTransaction}
+                  onClick={handlePayButtonClick}
                   disabled={
                     processing ||
                     userBalance < Number(total_amount) ||
@@ -267,6 +282,114 @@ export default function Transaction() {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="w-8 h-8 text-white"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10,17L5,12L6.41,10.59L10,14.17L17.59,6.58L19,8L10,17Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-center">
+                Belo listrik prabayar senilai
+              </h3>
+              <p className="text-2xl font-bold mt-2">
+                Rp{Number(total_amount).toLocaleString()} ?
+              </p>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <button
+                onClick={handleConfirmedTransaction}
+                className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded"
+              >
+                Ya, lanjutkan Bayar
+              </button>
+              <button
+                onClick={handleCancelConfirmation}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-3 rounded"
+              >
+                Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Dialog */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="w-8 h-8 text-white"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-center">
+                Pembayaran listrik prabayar sebesar
+              </h3>
+              <p className="text-2xl font-bold mt-2">
+                Rp{Number(total_amount).toLocaleString()}
+              </p>
+              <p className="text-lg font-medium text-green-500 mt-2">
+                berhasil!
+              </p>
+            </div>
+
+            <button
+              onClick={handleCloseSuccessModal}
+              className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded"
+            >
+              Kembali ke Beranda
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Failed Dialog */}
+      {showFailedModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="w-8 h-8 text-white"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-center">
+                Pembayaran listrik prabayar sebesar
+              </h3>
+              <p className="text-2xl font-bold mt-2">
+                Rp{Number(total_amount).toLocaleString()}
+              </p>
+              <p className="text-lg font-medium text-red-500 mt-2">gagal</p>
+            </div>
+
+            <button
+              onClick={handleCloseFailedModal}
+              className="w-full text-red-600 font-medium py-3 rounded"
+            >
+              Kembali ke Beranda
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

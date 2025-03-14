@@ -24,7 +24,9 @@ export default function HomePage() {
 
       {/* Services Section */}
       <Services />
-
+      <div className="mt-5">
+        <p><b>Temukan Promo Menarik</b></p>
+      </div>
       {/* Promo Section */}
       <Banners />
     </div>
