@@ -170,8 +170,8 @@ export default function Transaction() {
                       key={service.service_code}
                       value={service.service_code}
                     >
-                      {service.service_name} - Rp{" "}
-                      {service.service_tariff.toLocaleString()}
+                      <img src={service.service_icon} alt="" />
+                      {service.service_name} 
                     </option>
                   ))}
                 </select>

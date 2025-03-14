@@ -34,6 +34,7 @@ export default function TopUp() {
       if (data.status === 0) {
         setSuccessMessage(data.message); // Set pesan sukses dari response
       }
+      navigate('/transaction')
     } catch (error) {
       setErrors(error.response?.data?.message || "Terjadi kesalahan");
     } finally {
