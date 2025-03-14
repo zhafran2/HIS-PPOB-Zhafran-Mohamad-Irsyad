@@ -12,6 +12,7 @@ import Auth from "./components/auth.jsx";
 import TopUp from "./pages/topup.jsx";
 import Transaction from "./pages/transaction.jsx";
 import TransactionHistory from "./pages/transactionHistory.jsx";
+import UserPage from "./pages/userPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -24,7 +25,7 @@ createRoot(document.getElementById("root")).render(
         <Route element={<Auth />}>
           <Route path="/" element={<GetProfile />} />
           <Route path="/topup" element={<TopUp />} />
-
+          <Route path="/profile" element={<UserPage/>}/>
           <Route path="/profile/update" element={<UpdateProfile />} />
           <Route path="/transaction" element={<Transaction />} />
           <Route path="/transaction/history" element={<TransactionHistory/>}/>

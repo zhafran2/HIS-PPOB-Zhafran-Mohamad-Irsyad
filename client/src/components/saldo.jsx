@@ -42,9 +42,9 @@ export default function Saldo() {
       <div className="bg-red-500 text-white px-6 py-4 rounded-lg text-start relative mt-4 md:mt-0 h-60">
         <p className="text-lg font-semibold">Saldo Anda</p>
         <p className="text-3xl font-bold">
-          {location.pathname === "/topup" || location.pathname==='/transaction'
-            ? `Rp ${balance?.toLocaleString()}` // ✅ Tampilkan saldo di halaman top-up
-            : "Rp ••••••••"} {/* ✅ Sembunyikan saldo di halaman lain */}
+          {location.pathname === "/" 
+            ? "Rp ••••••••" // ✅ Tampilkan saldo di halaman top-up
+            : `Rp ${balance?.toLocaleString()}`} {/* ✅ Sembunyikan saldo di halaman lain */}
         </p>
         <button
           className="absolute bottom-4 left-6 text-sm underline hover:border-l-base-100"
